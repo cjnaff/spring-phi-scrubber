@@ -18,7 +18,7 @@ public class PeopleController {
     @Autowired
     private PeopleRepository peopleRepository;
 
-    @GetMapping(path="/people")
+    @GetMapping(path="/people/")
     public List<PersonDTO> getPeople() { 
 		return peopleRepository.findAll(); 
 	}
@@ -31,12 +31,33 @@ public class PeopleController {
     }
 
     
-@PostMapping(path = "/people")
-public ResponseEntity<PersonDTO> createPerson(@Validated @RequestBody PersonDTO personDTO) {
-	PersonDTO createdPerson = peopleRepository.save(personDTO);
-	return ResponseEntity.created(
-			URI.create("/people/" + createdPerson.getId())
-			).body(createdPerson);
-	}
+    @PostMapping(path = "/people")
+    public ResponseEntity<PersonDTO> createPerson(@Validated @RequestBody PersonDTO personDTO) {
+        PersonDTO createdPerson = peopleRepository.save(personDTO);
+        return ResponseEntity.created(
+                URI.create("/people/" + createdPerson.getId())
+                ).body(createdPerson);
+        }
+
+    @PutMapping(path="/people/{id}")
+    public ResponseEntity<PersonDTO> updatePerson(@PathVariable("id") Long id, @Validated @RequestBody PersonDTO personDTO) {
+            if(!peopleRepository.existsById(id)) {
+                return ResponseEntity.notFound().build();
+            }
+
+            personDTO.setId(id);
+            PersonDTO updatedPerson =  peopleRepository.save(personDTO);
+            return ResponseEntity.ok(updatedPerson);
+    }
+
+    @DeleteMapping(path="/people/{id}")
+    public ResponseEntity<PersonDTO> deletePerson(@PathVariable("id") Long id) {
+        if(!peopleRepository.existsById(id)){
+            return ResponseEntity.notFound().build();
+        }
+        peopleRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
 
 }
