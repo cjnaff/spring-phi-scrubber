@@ -2,6 +2,7 @@ package org.example.web;
 
 import org.example.dto.PersonDTO;
 import org.example.repository.PeopleRepository;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,7 +13,9 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -27,14 +30,28 @@ public class PeopleControllerIntegerationTest {
     private int localPort;
 //    @Autowired
 //    private PeopleRepository peopleRepository;
+    private static List<PersonDTO> testPeople = new ArrayList<>();
+    private static PersonDTO testPerson1 = new PersonDTO("First", "Test", "2020-01-01");
+    private static PersonDTO testPerson2 = new PersonDTO("Second", "Test", "2020-02-02");
+    private static PersonDTO testPerson3 = new PersonDTO("Third", "Test", "2020-03-03");
+
+    public void insertSomePeople() {
+        ResponseEntity<PersonDTO> r1 = createPerson(testPerson1);
+        ResponseEntity<PersonDTO> r2 = createPerson(testPerson2);
+        ResponseEntity<PersonDTO> r3 = createPerson(testPerson3);
+        System.out.println("Inserted test people: " + testPerson1 + ", " + testPerson2 + ", " + testPerson3);
+    }
 
     @Test
     void shouldGetPeople() {
+        insertSomePeople();
         // when
         ResponseEntity<List<PersonDTO>> response = getAllPeople();
         // then
-        System.out.println("Got List");
+        assertMovieList(response);
     }
+
+
 
 
     @Test
@@ -51,7 +68,7 @@ public class PeopleControllerIntegerationTest {
         // when
         ResponseEntity<PersonDTO> response = createPerson(personToCreate);
         // then
-
+        assertPersonCreated(response, personToCreate);
     }
 
     @Test
@@ -76,7 +93,7 @@ public class PeopleControllerIntegerationTest {
         return getServerUrl("/api/people/");
     }
 
-    private String getServerUrl(String endpoint) {
+    private  String getServerUrl(String endpoint) {
         return String.format("http://localhost:%d%s" , localPort, endpoint);
     }
 
@@ -93,7 +110,26 @@ public class PeopleControllerIntegerationTest {
     private void assertPersonCreated(ResponseEntity<PersonDTO> response, PersonDTO personToCreate) {
         assertThat(response.getStatusCode())
                 .isEqualTo(HttpStatus.CREATED);
+        assertThat(response.getBody())
+                .isNotNull();
+        assertThat(response.getBody().getId())
+                .isNotNull()
+                .isNotZero();
+        assertThat(response.getBody().getFirstName())
+                .isEqualTo(personToCreate.getFirstName());
+        assertThat(response.getBody().getLastName())
+                .isEqualTo(personToCreate.getLastName());
+        assertThat(response.getBody().getDob())
+                .isEqualTo(personToCreate.getDob());
 
+    }
+    private void assertMovieList(ResponseEntity<List<PersonDTO>> response) {
+        assertThat(response.getStatusCode())
+                .isEqualTo((HttpStatus.OK));
+        assertThat(response.getBody())
+                .isNotNull()
+                .isNotEmpty()
+                .containsAll(testPeople);
     }
 
 }
