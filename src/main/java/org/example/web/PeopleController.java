@@ -31,7 +31,7 @@ public class PeopleController {
     }
 
     
-    @PostMapping(path = "/people")
+    @PostMapping(path = "/people/")
     public ResponseEntity<PersonDTO> createPerson(@Validated @RequestBody PersonDTO personDTO) {
         PersonDTO createdPerson = peopleRepository.save(personDTO);
         return ResponseEntity.created(

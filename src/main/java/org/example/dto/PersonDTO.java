@@ -8,12 +8,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 
 @Entity(name="people")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public final class PersonDTO {
+public final class PersonDTO implements Comparable<PersonDTO> {
 
 
     @Id
@@ -29,6 +30,7 @@ public final class PersonDTO {
     private String lastName;
 
 //    @Column(nullable = false)
+    @Column(columnDefinition = "DATE")
     private LocalDate dob;
 
 
@@ -38,4 +40,22 @@ public final class PersonDTO {
         this.dob = LocalDate.parse(dob, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
 
+    public static Comparator<PersonDTO> PERSON_COMPARATOR= Comparator.comparing(PersonDTO::getFirstName)
+            .thenComparing(PersonDTO::getLastName)
+            .thenComparing(PersonDTO::getDob);
+
+    @Override
+    public int compareTo(PersonDTO o) {
+        int i = this.firstName.compareTo(o.firstName);
+        if(i!=0)  {
+            return i;
+        }
+        i = this.lastName.compareTo(o.lastName);
+        if(i!=0) {
+            return i;
+        }
+        i =  this.dob.compareTo(o.dob);
+        return i;
+
+    }
 }

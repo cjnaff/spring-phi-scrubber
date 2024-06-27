@@ -13,13 +13,13 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.example.dto.PersonDTO.PERSON_COMPARATOR;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
@@ -28,18 +28,20 @@ public class PeopleControllerIntegerationTest {
     private TestRestTemplate restTemplate;
     @LocalServerPort
     private int localPort;
-//    @Autowired
-//    private PeopleRepository peopleRepository;
+
     private static List<PersonDTO> testPeople = new ArrayList<>();
     private static PersonDTO testPerson1 = new PersonDTO("First", "Test", "2020-01-01");
     private static PersonDTO testPerson2 = new PersonDTO("Second", "Test", "2020-02-02");
     private static PersonDTO testPerson3 = new PersonDTO("Third", "Test", "2020-03-03");
 
+
+
     public void insertSomePeople() {
-        ResponseEntity<PersonDTO> r1 = createPerson(testPerson1);
-        ResponseEntity<PersonDTO> r2 = createPerson(testPerson2);
-        ResponseEntity<PersonDTO> r3 = createPerson(testPerson3);
-        System.out.println("Inserted test people: " + testPerson1 + ", " + testPerson2 + ", " + testPerson3);
+        testPeople.add(testPerson1);
+        testPeople.add(testPerson2);
+        testPeople.add(testPerson3);
+        testPeople.forEach(p -> createPerson(p));
+        System.out.println("Inserted test people: " + testPeople);
     }
 
     @Test
@@ -49,6 +51,7 @@ public class PeopleControllerIntegerationTest {
         ResponseEntity<List<PersonDTO>> response = getAllPeople();
         // then
         assertMovieList(response);
+
     }
 
 
@@ -115,12 +118,15 @@ public class PeopleControllerIntegerationTest {
         assertThat(response.getBody().getId())
                 .isNotNull()
                 .isNotZero();
-        assertThat(response.getBody().getFirstName())
+        assertThat(response.getBody())
+                .isEqualByComparingTo(personToCreate);
+
+   /*     assertThat(response.getBody().getFirstName())
                 .isEqualTo(personToCreate.getFirstName());
         assertThat(response.getBody().getLastName())
                 .isEqualTo(personToCreate.getLastName());
         assertThat(response.getBody().getDob())
-                .isEqualTo(personToCreate.getDob());
+                .isEqualTo(personToCreate.getDob());*/
 
     }
     private void assertMovieList(ResponseEntity<List<PersonDTO>> response) {
@@ -129,6 +135,7 @@ public class PeopleControllerIntegerationTest {
         assertThat(response.getBody())
                 .isNotNull()
                 .isNotEmpty()
+                .usingComparatorForType(PERSON_COMPARATOR, PersonDTO.class)
                 .containsAll(testPeople);
     }
 
