@@ -1,8 +1,6 @@
 package org.example.web;
 
 import org.example.dto.PersonDTO;
-import org.example.repository.PeopleRepository;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
