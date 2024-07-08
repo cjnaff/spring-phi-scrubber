@@ -1,4 +1,4 @@
-package org.example.web;
+package org.example.webservices;
 
 import org.example.dto.PersonDTO;
 import org.example.repository.PeopleRepository;

@@ -1,4 +1,4 @@
-package org.example.web;
+package org.example.webservices;
 
 import org.example.dto.MovieDTO;
 import org.example.repository.MoviesRepository;

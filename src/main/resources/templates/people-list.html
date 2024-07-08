@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>List Of People with Thymeleaf</title>
+</head>
+<body>
+    <table>
+        <tr>
+            <td> Last Name</td>
+            <td>First Name</td>
+            <td>DOB</td>
+        </tr>
+        <tr th:each ="personDTO: ${peeps}">
+            <td th:text = "${personDTO.lastName}">LastName</td>
+            <td th:text = "${personDTO.firstName}">FirstName</td>
+            <td th:date= "${personDTO.dob}">Dob</td>
+        </tr>
+
+    </table>
+
+</body>
+</html>
